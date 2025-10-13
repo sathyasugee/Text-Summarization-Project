@@ -1,7 +1,11 @@
 from textSummarizer.constants import *
 from textSummarizer.utils.common import read_yaml, create_directories
-from textSummarizer.entity import (DataIngestionConfig)
-from textSummarizer.entity import (DataValidationConfig)
+from textSummarizer.entity import (DataIngestionConfig,
+                                   DataValidationConfig,
+                                   DataTransformationConfig,
+                                   ModelTrainerConfig,
+                                   ModelEvalutionConfig)
+
 
 class ConfigurationManager:
     def __init__(self, config_filepath=CONFIG_FILE_PATH, params_filepath=PARAMS_FILE_PATH):
@@ -34,3 +38,52 @@ class ConfigurationManager:
                                                       DATA_DIR=config.DATA_DIR)
         
         return data_validation_config
+    
+    def get_data_transformation_config (self) -> DataTransformationConfig:
+        config = self.config.data_transformation
+
+        create_directories([config.root_dir])
+
+        data_transformation_config = DataTransformationConfig(root_dir = config.root_dir,
+                                                        data_path= config.data_path,
+                                                        tokenizer_name=config.tokenizer_name)
+        
+        return data_transformation_config
+    
+    def  get_model_trainer_config(self) -> ModelTrainerConfig:
+        config = self.config.model_trainer
+        params = self.params.TrainingArguments
+
+        create_directories([config.root_dir])
+
+        model_trainer_config = ModelTrainerConfig(
+            root_dir= config.root_dir,
+            data_path= config.data_path,
+            model_ckpt= config.model_ckpt,
+            num_train_epochs= params.num_train_epochs,
+            warmup_steps=params.warmup_steps,
+            per_device_train_batch_size= params.per_device_train_batch_size,
+            weight_decay= params.weight_decay,
+            logging_steps= params.logging_steps,
+            eval_strategy= params.eval_strategy,
+            eval_steps= params.eval_steps,
+            save_steps=params.save_steps,
+            gradient_accumulation_steps= params.gradient_accumulation_steps
+            
+        )
+
+        return model_trainer_config
+
+
+    def  get_model_evalution_config(self) -> ModelEvalutionConfig:
+        config = self.config.model_evalution 
+
+        create_directories([config.root_dir])
+
+        model_evalution_config = ModelEvalutionConfig(
+            root_dir= config.root_dir,
+            data_path= config.data_path,
+            model_path= config.model_path,
+            tokenizer_path= config.tokenizer_path,
+            metric_file_name=config.metric_file_name
+        )
