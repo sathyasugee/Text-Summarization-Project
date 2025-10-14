@@ -12,3 +12,5 @@ class ModelEvalutionPipeline:
         model_evalution_config = config.get_model_evalution_config()
         model_valution_config = ModelEvalution(config=model_evalution_config)
         model_evalution_config.train()
+
+    
